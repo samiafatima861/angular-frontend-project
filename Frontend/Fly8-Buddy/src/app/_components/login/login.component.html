@@ -1,0 +1,41 @@
+<div class="modal" tabindex="-1" role="dialog" [class.d-block]="isModalOpen" [class.show]="isModalOpen">
+  <div class="modal-dialog" role="document" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Login to Fly8-Buddy</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
+          <div class="mb-3">
+            <label for="inputEmail" class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" id="inputEmail" [(ngModel)]="user.email" required email #email="ngModel">
+            <div *ngIf="email.invalid && (email.dirty || email.touched)" class="text-danger small">
+              Please enter a valid email address.
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="inputPassword" class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" id="inputPassword" [(ngModel)]="user.password" required minlength="6" #password="ngModel">
+            <div *ngIf="password.invalid && (password.dirty || password.touched)" class="text-danger small">
+              Password must be at least 6 characters long.
+            </div>
+          </div>
+          <div class="mb-3 form-check">
+            <input class="form-check-input" name="rememberme" type="checkbox" id="rememberMe" [(ngModel)]="user.rememberMe">
+            <label class="form-check-label" for="rememberMe">
+              Remember Me
+            </label>
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Sign in</button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <p class="mb-0">Don't have an account? <a [routerLink]="'/signup'" (click)="closeModal()">Sign up</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show" *ngIf="isModalOpen"></div>

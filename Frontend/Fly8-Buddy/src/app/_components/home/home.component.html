@@ -1,0 +1,211 @@
+<div class="page-background">
+  <!-- Hero Section - Full Width -->
+  <div class="hero-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 d-flex align-items-center">
+          <div class="hero-content">
+            <h1 class="display-4 fw-bold">Welcome to Fly8-Buddy</h1>
+            <p class="fs-4">Your trusted partner for hassle-free flight bookings and travel experiences.</p>
+            <p class="mb-4">Find the best deals on flights to destinations worldwide. Book with confidence and enjoy your journey!</p>
+            <div class="d-flex gap-3">
+              <a routerLink="/flights" class="btn btn-primary btn-lg shadow">Book a Flight Now</a>
+              <button (click)="openLoginModal()" class="btn btn-outline-light btn-lg shadow">Login</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 text-center d-flex align-items-center justify-content-center">
+          <!-- Background image shows through -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container my-5">
+    <div class="row">
+      <!-- Featured Destinations -->
+      <div class="col-12">
+        <div class="content-section">
+          <h2 class="text-center mb-4">Featured Destinations</h2>
+          <div class="row">
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <img src="https://via.placeholder.com/300x200?text=New+York" class="card-img-top" alt="New York">
+                <div class="card-body">
+                  <h5 class="card-title">New York</h5>
+                  <p class="card-text">Experience the vibrant city life, iconic landmarks, and diverse culture of the Big Apple.</p>
+                  <p class="text-primary fw-bold">From $299</p>
+                  <a routerLink="/flights" class="btn btn-outline-primary">View Deals</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <img src="https://via.placeholder.com/300x200?text=Paris" class="card-img-top" alt="Paris">
+                <div class="card-body">
+                  <h5 class="card-title">Paris</h5>
+                  <p class="card-text">Discover the romance, art, and culinary delights of the City of Light.</p>
+                  <p class="text-primary fw-bold">From $399</p>
+                  <a routerLink="/flights" class="btn btn-outline-primary">View Deals</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <img src="https://via.placeholder.com/300x200?text=Tokyo" class="card-img-top" alt="Tokyo">
+                <div class="card-body">
+                  <h5 class="card-title">Tokyo</h5>
+                  <p class="card-text">Immerse yourself in the fascinating blend of tradition and innovation in Japan's capital.</p>
+                  <p class="text-primary fw-bold">From $599</p>
+                  <a routerLink="/flights" class="btn btn-outline-primary">View Deals</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Why Choose Us -->
+      <div class="col-12">
+        <div class="content-section">
+          <h2 class="text-center mb-4">Why Choose Fly8-Buddy?</h2>
+          <div class="row">
+            <div class="col-md-4 mb-4 text-center">
+              <div class="p-3">
+                <i class="bi bi-tag-fill fs-1 text-primary mb-3"></i>
+                <h4>Best Price Guarantee</h4>
+                <p>We offer competitive prices on flights to ensure you get the best value for your money.</p>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4 text-center">
+              <div class="p-3">
+                <i class="bi bi-shield-check fs-1 text-primary mb-3"></i>
+                <h4>Secure Booking</h4>
+                <p>Your personal information and payment details are protected with advanced security measures.</p>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4 text-center">
+              <div class="p-3">
+                <i class="bi bi-headset fs-1 text-primary mb-3"></i>
+                <h4>24/7 Customer Support</h4>
+                <p>Our dedicated support team is available around the clock to assist you with any queries.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Travel Tips -->
+      <div class="col-12">
+        <div class="content-section">
+          <h2 class="text-center mb-4">Travel Tips</h2>
+          <div class="row">
+            <div class="col-md-4 mb-4">
+              <div class="travel-tip-card">
+                <i class="bi bi-clock fs-1 text-primary mb-3"></i>
+                <h4>Arrive Early</h4>
+                <p>Arrive at the airport at least 2 hours before domestic flights and 3 hours for international flights.</p>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <div class="travel-tip-card">
+                <i class="bi bi-luggage fs-1 text-primary mb-3"></i>
+                <h4>Check Baggage Allowance</h4>
+                <p>Check baggage allowance before packing to avoid extra fees at the airport.</p>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <div class="travel-tip-card">
+                <i class="bi bi-passport fs-1 text-primary mb-3"></i>
+                <h4>Passport Validity</h4>
+                <p>Ensure your passport is valid for at least 6 months beyond your travel dates.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimonials -->
+      <div class="col-12">
+        <div class="content-section">
+          <h2 class="text-center mb-4">What Our Customers Say</h2>
+          <div class="row">
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="d-flex mb-3">
+                    <div class="text-warning">
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                    </div>
+                  </div>
+                  <p class="card-text">"Fly8-Buddy made my travel planning so easy! I found a great deal on my flight to Europe and the booking process was seamless."</p>
+                  <p class="fw-bold mb-0">- Sarah Johnson</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="d-flex mb-3">
+                    <div class="text-warning">
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                    </div>
+                  </div>
+                  <p class="card-text">"The customer service is exceptional! When my flight was delayed, they helped me rebook without any additional charges."</p>
+                  <p class="fw-bold mb-0">- Michael Brown</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="d-flex mb-3">
+                    <div class="text-warning">
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-half"></i>
+                    </div>
+                  </div>
+                  <p class="card-text">"I've been using Fly8-Buddy for all my business trips for the past year. Their prices are competitive and the service is reliable."</p>
+                  <p class="fw-bold mb-0">- Jennifer Lee</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Newsletter - Full Width -->
+  <div class="container">
+    <div class="newsletter-section text-white p-5 rounded-3 mb-5">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h3>Subscribe to Our Newsletter</h3>
+          <p>Stay updated with our latest offers, travel tips, and exclusive deals.</p>
+        </div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <input type="email" class="form-control" placeholder="Enter your email">
+            <button class="btn btn-light" type="button">Subscribe</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<app-login *ngIf="showLoginModal" (click)="closeLoginModal()"></app-login>

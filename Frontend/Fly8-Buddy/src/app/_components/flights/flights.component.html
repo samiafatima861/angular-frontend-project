@@ -1,0 +1,382 @@
+<!-- <p>flights works!</p> -->
+<!-- Main Content Container -->
+<div class="container py-4">
+  <div class="row">
+    <!-- Left Sidebar - Popular Destinations -->
+    <div class="col-md-3">
+      <div class="sidebar-left mb-4">
+        <h4 class="sidebar-title">Popular Destinations</h4>
+        <div class="iata-sticky-section">
+          <ul class="destination-list list-unstyled">
+            <li class="destination-item" *ngFor="let dest of popularDestinations">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <span class="iata-code">{{ dest.code }}</span>
+                  <span class="city-name">{{ dest.city }}, {{ dest.country }}</span>
+                </div>
+                <span class="price">${{ dest.price }}</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main Content - Flight Search -->
+    <div class="col-md-6">
+      <div class="content-section">
+        <h2 class="text-center mb-4">Search Flights</h2>
+        
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-3" id="flightSearchTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="round-trip-tab" data-bs-toggle="tab" data-bs-target="#round-trip-tab-pane" 
+                    type="button" role="tab" aria-controls="round-trip-tab-pane" aria-selected="true"
+                    (click)="setActiveTab('round-trip')">
+              Round Trip
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="one-way-tab" data-bs-toggle="tab" data-bs-target="#one-way-tab-pane" 
+                    type="button" role="tab" aria-controls="one-way-tab-pane" aria-selected="false"
+                    (click)="setActiveTab('one-way')">
+              One Way
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="multi-city-tab" data-bs-toggle="tab" data-bs-target="#multi-city-tab-pane" 
+                    type="button" role="tab" aria-controls="multi-city-tab-pane" aria-selected="false"
+                    (click)="setActiveTab('multi-city')">
+              Multi-City
+            </button>
+          </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="flightSearchTabsContent">
+          <!-- Round Trip Tab -->
+          <div class="tab-pane fade show active" id="round-trip-tab-pane" role="tabpanel" aria-labelledby="round-trip-tab" tabindex="0">
+            <form (ngSubmit)="onSubmit()">
+              <!-- Source Location Selection -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="sourceCountry" class="form-label">From Country</label>
+                  <select class="form-select" id="sourceCountry" name="sourceCountry" [(ngModel)]="selectedSourceCountry" (change)="onSourceCountryChange()" required>
+                    <option value="" disabled selected>Select country</option>
+                    <option *ngFor="let country of countries" [value]="country.code">
+                      {{ country.name }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="sourceCity-round-trip" class="form-label">From City</label>
+                  <select class="form-select" id="sourceCity-round-trip" name="sourceCity" [(ngModel)]="flight.source" (change)="onSourceCitySelected(flight.source)" required [disabled]="!selectedSourceCountry">
+                    <option value="" disabled selected>Select city</option>
+                    <option *ngFor="let city of filteredSourceCities" [value]="city.code">
+                      {{ city.name }} ({{ city.code }})
+                    </option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- Destination Location Selection -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="destinationCountry" class="form-label">To Country</label>
+                  <select class="form-select" id="destinationCountry" name="destinationCountry" [(ngModel)]="selectedDestinationCountry" (change)="onDestinationCountryChange()" required>
+                    <option value="" disabled selected>Select country</option>
+                    <option *ngFor="let country of countries" [value]="country.code">
+                      {{ country.name }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="destinationCity-round-trip" class="form-label">To City</label>
+                  <select class="form-select" id="destinationCity-round-trip" name="destinationCity" [(ngModel)]="flight.destination" (change)="onDestinationCitySelected(flight.destination)" required [disabled]="!selectedDestinationCountry">
+                    <option value="" disabled selected>Select city</option>
+                    <option *ngFor="let city of filteredDestinationCities" [value]="city.code">
+                      {{ city.name }} ({{ city.code }})
+                    </option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- Date Selection -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="departDate" class="form-label">Departure Date</label>
+                  <input type="date" class="form-control" id="departDate" name="dateOfTravel" [(ngModel)]="flight.dateOfTravel" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="returnDate" class="form-label">Return Date</label>
+                  <input type="date" class="form-control" id="returnDate" name="returnDate" [(ngModel)]="flight.returnDate" required>
+                </div>
+              </div>
+              
+              <!-- Travel Class and Passengers -->
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label for="travelClass" class="form-label">Travel Class</label>
+                  <select class="form-select" id="travelClass" name="travelClass" [(ngModel)]="flight.travelClass">
+                    <option value="Economy">Economy</option>
+                    <option value="Business">Business</option>
+                    <option value="First">First Class</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Adults</label>
+                  <div class="input-group">
+                    <button type="button" class="btn btn-outline-secondary" (click)="decrementAdults()">-</button>
+                    <input type="number" class="form-control text-center" name="numberOfAdults" [(ngModel)]="flight.numberOfAdults" readonly>
+                    <button type="button" class="btn btn-outline-secondary" (click)="incrementAdults()">+</button>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Children</label>
+                  <div class="input-group">
+                    <button type="button" class="btn btn-outline-secondary" (click)="decrementChildren()">-</button>
+                    <input type="number" class="form-control text-center" name="numberOfChildren" [(ngModel)]="flight.numberOfChildren" readonly>
+                    <button type="button" class="btn btn-outline-secondary" (click)="incrementChildren()">+</button>
+                  </div>
+                </div>
+              </div>
+              
+              <button type="submit" class="btn btn-primary w-100">Search Flights</button>
+            </form>
+          </div>
+          
+          <!-- One Way Tab -->
+          <div class="tab-pane fade" id="one-way-tab-pane" role="tabpanel" aria-labelledby="one-way-tab" tabindex="0">
+            <form (ngSubmit)="onSubmit()">
+              <!-- Source Location Selection -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="sourceCountryOneWay" class="form-label">From Country</label>
+                  <select class="form-select" id="sourceCountryOneWay" name="sourceCountry" [(ngModel)]="selectedSourceCountry" (change)="onSourceCountryChange()" required>
+                    <option value="" disabled selected>Select country</option>
+                    <option *ngFor="let country of countries" [value]="country.code">
+                      {{ country.name }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="sourceCityOneWay" class="form-label">From City</label>
+                  <select class="form-select" id="sourceCityOneWay" name="sourceCity" [(ngModel)]="flight.source" (change)="onSourceCitySelected(flight.source)" required [disabled]="!selectedSourceCountry">
+                    <option value="" disabled selected>Select city</option>
+                    <option *ngFor="let city of filteredSourceCities" [value]="city.code">
+                      {{ city.name }} ({{ city.code }})
+                    </option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- Destination Location Selection -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="destinationCountryOneWay" class="form-label">To Country</label>
+                  <select class="form-select" id="destinationCountryOneWay" name="destinationCountry" [(ngModel)]="selectedDestinationCountry" (change)="onDestinationCountryChange()" required>
+                    <option value="" disabled selected>Select country</option>
+                    <option *ngFor="let country of countries" [value]="country.code">
+                      {{ country.name }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="destinationCityOneWay" class="form-label">To City</label>
+                  <select class="form-select" id="destinationCityOneWay" name="destinationCity" [(ngModel)]="flight.destination" (change)="onDestinationCitySelected(flight.destination)" required [disabled]="!selectedDestinationCountry">
+                    <option value="" disabled selected>Select city</option>
+                    <option *ngFor="let city of filteredDestinationCities" [value]="city.code">
+                      {{ city.name }} ({{ city.code }})
+                    </option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- Date Selection -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="departDateOneWay" class="form-label">Departure Date</label>
+                  <input type="date" class="form-control" id="departDateOneWay" name="dateOfTravel" [(ngModel)]="flight.dateOfTravel" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="travelClassOneWay" class="form-label">Travel Class</label>
+                  <select class="form-select" id="travelClassOneWay" name="travelClass" [(ngModel)]="flight.travelClass">
+                    <option value="Economy">Economy</option>
+                    <option value="Business">Business</option>
+                    <option value="First">First Class</option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- Passengers -->
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Adults</label>
+                  <div class="input-group">
+                    <button type="button" class="btn btn-outline-secondary" (click)="decrementAdults()">-</button>
+                    <input type="number" class="form-control text-center" name="numberOfAdults" [(ngModel)]="flight.numberOfAdults" readonly>
+                    <button type="button" class="btn btn-outline-secondary" (click)="incrementAdults()">+</button>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Children</label>
+                  <div class="input-group">
+                    <button type="button" class="btn btn-outline-secondary" (click)="decrementChildren()">-</button>
+                    <input type="number" class="form-control text-center" name="numberOfChildren" [(ngModel)]="flight.numberOfChildren" readonly>
+                    <button type="button" class="btn btn-outline-secondary" (click)="incrementChildren()">+</button>
+                  </div>
+                </div>
+              </div>
+              
+              <button type="submit" class="btn btn-primary w-100">Search Flights</button>
+            </form>
+          </div>
+          
+          <!-- Multi-City Tab -->
+          <div class="tab-pane fade" id="multi-city-tab-pane" role="tabpanel" aria-labelledby="multi-city-tab" tabindex="0">
+            <form (ngSubmit)="onSubmit()">
+              <!-- Flight Segments -->
+              <div *ngFor="let segment of multiCitySegments; let i = index" class="flight-segment mb-4">
+                <h5 class="segment-title">Flight {{ i + 1 }}</h5>
+                
+                <!-- Source Location Selection -->
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label [for]="'segmentSourceCountry' + i" class="form-label">From Country</label>
+                    <select class="form-select" [id]="'segmentSourceCountry' + i" [name]="'segmentSourceCountry' + i" 
+                            [(ngModel)]="segmentSourceCountries[i]" (change)="onSegmentSourceCountryChange(i)" required>
+                      <option value="" disabled selected>Select country</option>
+                      <option *ngFor="let country of countries" [value]="country.code">
+                        {{ country.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label [for]="'source-city-multi-' + i" class="form-label">From City</label>
+                    <select [id]="'source-city-multi-' + i" class="form-select" [(ngModel)]="segment.source" (change)="onSegmentSourceCitySelected(i, segment.source)" required [disabled]="!segmentSourceCountries[i]">
+                      <option value="">Select City</option>
+                      <option *ngFor="let city of segmentFilteredSourceCities[i]" [value]="city.code">{{ city.name }}</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <!-- Destination Location Selection -->
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label [for]="'segmentDestinationCountry' + i" class="form-label">To Country</label>
+                    <select class="form-select" [id]="'segmentDestinationCountry' + i" [name]="'segmentDestinationCountry' + i" 
+                            [(ngModel)]="segmentDestinationCountries[i]" (change)="onSegmentDestinationCountryChange(i)" required>
+                      <option value="" disabled selected>Select country</option>
+                      <option *ngFor="let country of countries" [value]="country.code">
+                        {{ country.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label [for]="'destination-city-multi-' + i" class="form-label">To City</label>
+                    <select [id]="'destination-city-multi-' + i" class="form-select" [(ngModel)]="segment.destination" (change)="onSegmentDestinationCitySelected(i, segment.destination)" required [disabled]="!segmentDestinationCountries[i]">
+                      <option value="">Select City</option>
+                      <option *ngFor="let city of segmentFilteredDestinationCities[i]" [value]="city.code">{{ city.name }}</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <!-- Date Selection -->
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label [for]="'segmentDate' + i" class="form-label">Departure Date</label>
+                    <input type="date" class="form-control" [id]="'segmentDate' + i" [name]="'segmentDate' + i" [(ngModel)]="segment.dateOfTravel" required>
+                  </div>
+                </div>
+                
+                <hr *ngIf="i < multiCitySegments.length - 1">
+              </div>
+              
+              <!-- Segment Controls -->
+              <div class="segment-controls mb-3">
+                <button type="button" class="btn btn-outline-primary me-2" (click)="addFlightSegment()">
+                  <i class="bi bi-plus-circle"></i> Add Flight
+                </button>
+                <button type="button" class="btn btn-outline-danger" *ngIf="multiCitySegments.length > 1" (click)="removeFlightSegment(multiCitySegments.length - 1)">
+                  <i class="bi bi-dash-circle"></i> Remove Flight
+                </button>
+              </div>
+              
+              <!-- Travel Class and Passengers -->
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label for="travelClassMulti" class="form-label">Travel Class</label>
+                  <select class="form-select" id="travelClassMulti" name="travelClass" [(ngModel)]="flight.travelClass">
+                    <option value="Economy">Economy</option>
+                    <option value="Business">Business</option>
+                    <option value="First">First Class</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Adults</label>
+                  <div class="input-group">
+                    <button type="button" class="btn btn-outline-secondary" (click)="decrementAdults()">-</button>
+                    <input type="number" class="form-control text-center" name="numberOfAdults" [(ngModel)]="flight.numberOfAdults" readonly>
+                    <button type="button" class="btn btn-outline-secondary" (click)="incrementAdults()">+</button>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Children</label>
+                  <div class="input-group">
+                    <button type="button" class="btn btn-outline-secondary" (click)="decrementChildren()">-</button>
+                    <input type="number" class="form-control text-center" name="numberOfChildren" [(ngModel)]="flight.numberOfChildren" readonly>
+                    <button type="button" class="btn btn-outline-secondary" (click)="incrementChildren()">+</button>
+                  </div>
+                </div>
+              </div>
+              
+              <button type="submit" class="btn btn-primary w-100">Search Flights</button>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Flight Details (if available) -->
+        <div *ngIf="flightAvailable" class="mt-4">
+          <app-flight-detail [flightDetails]="flight"></app-flight-detail>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Sidebar - IATA Codes -->
+    <div class="col-md-3">
+      <div class="sidebar-right mb-4">
+        <h4 class="sidebar-title">IATA Airport Codes</h4>
+        <div class="iata-sticky-section">
+          <ul class="iata-list list-unstyled">
+            <li class="iata-item" *ngFor="let iata of iataCodes">
+              <span class="iata-code">{{ iata.code }}</span>
+              <span class="airport-name">{{ iata.name }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="travel-tips">
+        <h4 class="sidebar-title">Travel Tips</h4>
+        <ul class="list-unstyled">
+          <li class="tip-item">
+            <i class="bi bi-clock"></i>
+            <p>Arrive at the airport at least 2 hours before your flight.</p>
+          </li>
+          <li class="tip-item">
+            <i class="bi bi-passport"></i>
+            <p>Check passport validity before international travel.</p>
+          </li>
+          <li class="tip-item">
+            <i class="bi bi-luggage"></i>
+            <p>Pack essentials in your carry-on luggage.</p>
+          </li>
+          <li class="tip-item">
+            <i class="bi bi-currency-exchange"></i>
+            <p>Exchange currency before your trip for better rates.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

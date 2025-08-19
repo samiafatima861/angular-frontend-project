@@ -1,0 +1,187 @@
+<!-- <p>flight-detail works!</p> -->
+<!-- flight-detail.component.html -->
+
+<div *ngIf="flightDetails" class="card my-3">
+    <div class="card-body">
+        <h3 class="card-title">Flight Details</h3>
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <div class="location-info mb-3">
+                    <h5 class="text-primary mb-1">From</h5>
+                    <div class="d-flex align-items-center">
+                        <span class="location-code me-2">{{ flightDetails.source }}</span>
+                        <span class="location-name">
+                            {{ flightDetails.sourceCity || 'Unknown City' }}, 
+                            {{ flightDetails.sourceCountry || 'Unknown Country' }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="location-info mb-3">
+                    <h5 class="text-primary mb-1">To</h5>
+                    <div class="d-flex align-items-center">
+                        <span class="location-code me-2">{{ flightDetails.destination }}</span>
+                        <span class="location-name">
+                            {{ flightDetails.destinationCity || 'Unknown City' }}, 
+                            {{ flightDetails.destinationCountry || 'Unknown Country' }}
+                        </span>
+                    </div>
+                </div>
+                
+                <p><strong>Date of Travel:</strong> {{ flightDetails.dateOfTravel | date:'mediumDate' }}</p>
+                <p *ngIf="flightDetails.returnDate"><strong>Return Date:</strong> {{ flightDetails.returnDate | date:'mediumDate' }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Travel Class:</strong> {{ flightDetails.travelClass }}</p>
+                <p><strong>Adults:</strong> {{ flightDetails.numberOfAdults }}</p>
+                <p><strong>Children:</strong> {{ flightDetails.numberOfChildren }}</p>
+                <p><strong>Price:</strong> {{ flightDetails.price | currency:'USD':'symbol' }}</p>
+            </div>
+        </div>
+        
+        <!-- Multi-city segments if available -->
+        <div *ngIf="flightDetails.segments && flightDetails.segments.length > 0" class="mt-3 mb-3">
+            <h5 class="text-primary">Flight Segments</h5>
+            <div class="segment-list">
+                <div *ngFor="let segment of flightDetails.segments; let i = index" class="segment-item p-2 mb-2 border-bottom">
+                    <div class="d-flex justify-content-between">
+                        <div class="segment-route">
+                            <strong>Flight {{ i + 1 }}:</strong> 
+                            <span class="location-code">{{ segment.source }}</span> 
+                            ({{ segment.sourceCity || 'Unknown City' }}, {{ segment.sourceCountry || 'Unknown Country' }})
+                            <i class="bi bi-arrow-right mx-2"></i>
+                            <span class="location-code">{{ segment.destination }}</span>
+                            ({{ segment.destinationCity || 'Unknown City' }}, {{ segment.destinationCountry || 'Unknown Country' }})
+                        </div>
+                        <div class="segment-date">
+                            {{ segment.dateOfTravel | date:'mediumDate' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Booking Actions -->
+        <div class="d-flex justify-content-between align-items-center">
+            <!-- Confirmation Button (only show if not yet booked) -->
+            <button *ngIf="!bookingConfirmed" class="btn btn-primary" (click)="openPassengerDetailsForm()">Book Now</button>
+            
+            <!-- Download Ticket Button (only show after booking is confirmed) -->
+            <button *ngIf="bookingConfirmed" class="btn btn-success" (click)="generatePDF()">
+                <i class="bi bi-download me-2"></i>Download Ticket
+            </button>
+            
+            <!-- Booking Reference (only show after booking is confirmed) -->
+            <div *ngIf="bookingConfirmed" class="booking-reference">
+                <span class="badge bg-success p-2">Booking Confirmed!</span>
+                <p class="mb-0 mt-2"><strong>Reference:</strong> {{ bookingReference }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Passenger Details Form -->
+<div *ngIf="showPassengerDetailsForm && !bookingConfirmed" class="card mt-3">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Passenger Details</h4>
+    </div>
+    <div class="card-body">
+        <div *ngFor="let passenger of passengers; let i = index" class="mb-4 passenger-form">
+            <h5>Passenger {{ i + 1 }}</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="passenger{{i + 1}}Name" class="form-label">Full Name *</label>
+                    <input type="text" class="form-control" id="passenger{{i + 1}}Name" [(ngModel)]="passenger.name" required>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label for="passenger{{i + 1}}Age" class="form-label">Age *</label>
+                    <input type="number" class="form-control" id="passenger{{i + 1}}Age" [(ngModel)]="passenger.age" min="0" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="passenger{{i + 1}}Gender" class="form-label">Gender</label>
+                    <select class="form-select" id="passenger{{i + 1}}Gender" [(ngModel)]="passenger.gender">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="passenger{{i + 1}}SeatPref" class="form-label">Seat Preference</label>
+                    <select class="form-select" id="passenger{{i + 1}}SeatPref" [(ngModel)]="passenger.seatPreference">
+                        <option value="No Preference">No Preference</option>
+                        <option value="Window">Window</option>
+                        <option value="Aisle">Aisle</option>
+                        <option value="Middle">Middle</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="passenger{{i + 1}}MealPref" class="form-label">Meal Preference</label>
+                    <select class="form-select" id="passenger{{i + 1}}MealPref" [(ngModel)]="passenger.mealPreference">
+                        <option value="Regular">Regular</option>
+                        <option value="Vegetarian">Vegetarian</option>
+                        <option value="Vegan">Vegan</option>
+                        <option value="Kosher">Kosher</option>
+                        <option value="Halal">Halal</option>
+                        <option value="Gluten-Free">Gluten-Free</option>
+                    </select>
+                </div>
+            </div>
+            <hr *ngIf="i < passengers.length - 1">
+        </div>
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-primary" (click)="submitPassengerDetails()">Continue to Customer Details</button>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Details Modal -->
+<div class="modal" tabindex="-1" [class.show]="showCustomerDetailsModal" [style.display]="showCustomerDetailsModal ? 'block' : 'none'">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Customer Details</h5>
+                <button type="button" class="btn-close btn-close-white" (click)="closeCustomerModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="firstName" [(ngModel)]="customer.firstName" name="firstName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="lastName" [(ngModel)]="customer.lastName" name="lastName" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" [(ngModel)]="customer.email" name="email" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number *</label>
+                            <input type="tel" class="form-control" id="phone" [(ngModel)]="customer.phone" name="phone" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" rows="2" [(ngModel)]="customer.address" name="address"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="specialRequests" class="form-label">Special Requests</label>
+                        <textarea class="form-control" id="specialRequests" rows="3" [(ngModel)]="customer.specialRequests" name="specialRequests" placeholder="Any special requirements or requests?"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeCustomerModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" (click)="submitCustomerDetails()">Complete Booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade show" *ngIf="showCustomerDetailsModal"></div>
