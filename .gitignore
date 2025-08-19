@@ -1,5 +1,8 @@
 # Node dependencies
 node_modules/
+.angular/
+
+.vscode/
 
 # Angular specific
 .angular/
